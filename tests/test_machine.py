@@ -50,3 +50,14 @@ class MachineTest(unittest.TestCase):
         self.assertEqual(machine.coins[Coin.QUARTER], 13)
         self.assertEqual(machine.coins[Coin.DIME], 13)
         self.assertEqual(machine.coins[Coin.NICKEL], 9)
+
+    def test_buy_biscuit_too_many_coins2(self): # 2*25 5*10 0*5
+        rack = Rack("A", "Biscuit", 65)
+        machine = Machine([rack], 0)
+        machine.coins[Coin.DIME] = 1
+        machine.refill("A", 1)
+        for i in range(3):
+            machine.insert(Coin.QUARTER)
+        machine.press("A")
+        self.assertEqual(machine.racks['A'].quantity, 0)
+        self.assertEqual(sum([ k.value*v for k,v in machine.coins.items() ]), 75)

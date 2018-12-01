@@ -1,0 +1,21 @@
+NICKEL: 0, 5, 10
+DIME: 0, 10, 20
+QUARTER: 0, 25
+
+change = 35
+
+1 QUARTER
+1 DIME
+
+1 QUARTER
+2 NICKEL
+
+2 DIME
+2 NICKEL
+
+def make_change(v):
+    for coin in Coin:
+        v += coin_values[coin].pop()
+        print(v)
+        make_change(v)
+        
