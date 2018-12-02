@@ -14,13 +14,13 @@ class Coin(Enum):
     DOLLAR = 100
 
 class Machine:
-    def __init__(self, racks, coin_count = 0):
+    def __init__(self, racks, coin_count=0):
         self.racks = {}
         self.coins = {
-            Coin.NICKEL: coin_count,
-            Coin.DIME: coin_count,
+            Coin.DOLLAR: coin_count,
             Coin.QUARTER: coin_count,
-            Coin.DOLLAR: coin_count
+            Coin.DIME: coin_count,
+            Coin.NICKEL: coin_count,
         }
         for rack in racks:
             self.racks[rack.code] = rack
@@ -33,33 +33,36 @@ class Machine:
         self.coins[coin] += 1
         self.amount += coin.value
 
+    # Recursive calls to find right coins combination to give change
     def calc_change(self, change, coins_list, coins, val=0, coins_i=0):
-        if val > change:
-            return None
         if val == change:
             return coins
-       
-        for i in range(coins_i,len(coins_list)):
+        if val > change:
+            return None
+        for i in range(coins_i, len(coins_list)):
             if coins[coins_list[i]] == 0:
                 continue
-            c = coins.copy()
-            c[coins_list[i]] -= 1
-            found = self.calc_change(change, coins_list, c, val+coins_list[i].value, i)
+            ccoins = coins.copy()
+            ccoins[coins_list[i]] -= 1
+            found = self.calc_change(change, coins_list, ccoins, val+coins_list[i].value, i)
             if found:
                 return found
         return None
-        
+
     def make_change(self, change):
         if change == 0:
             return True
         coins_list = list(self.coins.keys())
         new_coins = self.calc_change(change, coins_list, self.coins)
         if new_coins:
-            for key,val in self.coins.items():
-                nb = val - new_coins[key]
-                if nb > 0:
-                    print(f'give back {nb} {key.name}')
+            back_coins = []
+            for key, val in self.coins.items():
+                nbc = val - new_coins[key]
+                if nbc > 0:
+                    back_coins.append(f'{nbc} {key.name}')
+            print(f'Change: {change} ({", ".join(back_coins)})')
             self.coins = new_coins
+            self.amount = 0
             return True
         return False
 
@@ -72,6 +75,7 @@ class Machine:
                     self.racks[code].quantity -= 1
                 else:
                     print("no change available")
+                    self.make_change(self.amount)
             else:
                 print("product not available")
                 self.make_change(self.amount)

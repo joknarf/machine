@@ -51,13 +51,38 @@ class MachineTest(unittest.TestCase):
         self.assertEqual(machine.coins[Coin.DIME], 13)
         self.assertEqual(machine.coins[Coin.NICKEL], 9)
 
-    def test_buy_biscuit_too_many_coins2(self): # 2*25 5*10 0*5
-        rack = Rack("A", "Biscuit", 65)
+    def test_buy_biscuit_too_many_coins2(self):
+        rack = Rack("A", "Biscuit", 90)
         machine = Machine([rack], 0)
         machine.coins[Coin.DIME] = 1
         machine.refill("A", 1)
-        for i in range(3):
+        for i in range(1):
             machine.insert(Coin.QUARTER)
+        for i in range(10):
+            machine.insert(Coin.DIME)
         machine.press("A")
         self.assertEqual(machine.racks['A'].quantity, 0)
-        self.assertEqual(sum([ k.value*v for k,v in machine.coins.items() ]), 75)
+        self.assertEqual(sum([ k.value*v for k,v in machine.coins.items() ]), 100)
+
+    def test_make_change(self):
+        machine = Machine([], 0)
+        for change in [ 5, 10, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80 ]:
+            machine.coins = {
+                Coin.QUARTER: 2,
+                Coin.DIME: 2,
+                Coin.NICKEL: 2,
+            }
+            left = sum([ k.value*v for k,v in machine.coins.items() ]) - change 
+            self.assertTrue(machine.make_change(change))
+            self.assertEqual(sum([ k.value*v for k,v in machine.coins.items() ]), left)
+
+    def test_make_change_fail(self):
+        machine = Machine([], 0)
+        machine.coins = {
+            Coin.DOLLAR: 0,
+            Coin.QUARTER: 1,
+            Coin.DIME: 1,
+            Coin.NICKEL: 0,
+        }
+        change = 30
+        self.assertFalse(machine.make_change(change))

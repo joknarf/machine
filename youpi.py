@@ -128,20 +128,21 @@ def mk_change5(value, coins_c, coins_v, coins, change_coins, val=0, i_coin=0):
         return change_coins
    
     for i in range(i_coin,len(coins)):
-        c = change_coins.copy()
-        if c[coins[i]] == coins_c[coins[i]]:
+        if change_coins[coins[i]] == coins_c[coins[i]]:
             continue
+        c = change_coins.copy()
         c[coins[i]] += 1
         found = mk_change5(value, coins_c, coins_v, coins, c, val+coins_v[coins[i]], i)
         if found:
             return found
     return None
 
+
 coins = [ 'QUARTER', 'DIME', 'NICKEL' ]
 coins_c = {
-    'QUARTER': 3,
+    'QUARTER': 5,
     'DIME': 3,
-    'NICKEL': 5,
+    'NICKEL': 10,
 }
  
 
@@ -159,5 +160,5 @@ change_coins = {
 result = {}
 found = False
 #mk_change(15,change_coins)
-result = make_change(130, coins_c, coins_v)
+result = make_change(200, coins_c, coins_v)
 print(result)
