@@ -66,8 +66,9 @@ class MachineTest(unittest.TestCase):
 
     def test_make_change(self):
         machine = Machine([], 0)
-        for change in [ 5, 10, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80 ]:
+        for change in [ 5, 10, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 100, 105, 110, 115 ]:
             machine.coins = {
+                Coin.DOLLAR: 1,
                 Coin.QUARTER: 2,
                 Coin.DIME: 2,
                 Coin.NICKEL: 2,

@@ -25,6 +25,7 @@ class Machine:
         for rack in racks:
             self.racks[rack.code] = rack
         self.amount = 0
+        self.coins_list = list(self.coins.keys()) # need ordered list
 
     def refill(self, code, quantity):
         self.racks[code].quantity += quantity
@@ -34,26 +35,26 @@ class Machine:
         self.amount += coin.value
 
     # Recursive calls to find right coins combination to give change
-    def calc_change(self, change, coins_list, coins, val=0, coins_i=0):
+    def __calc_change(self, change, coins, val=0, coins_i=0):
         if val == change:
             return coins
         if val > change:
             return None
-        for i in range(coins_i, len(coins_list)):
-            if coins[coins_list[i]] == 0:
+        for i in range(coins_i, len(coins)):
+            coin_type = self.coins_list[i]
+            if coins[coin_type] == 0:
                 continue
             ccoins = coins.copy()
-            ccoins[coins_list[i]] -= 1
-            found = self.calc_change(change, coins_list, ccoins, val+coins_list[i].value, i)
-            if found:
-                return found
+            ccoins[coin_type] -= 1
+            ccoins = self.__calc_change(change, ccoins, val+coin_type.value, i)
+            if ccoins:
+                return ccoins
         return None
 
     def make_change(self, change):
         if change == 0:
             return True
-        coins_list = list(self.coins.keys())
-        new_coins = self.calc_change(change, coins_list, self.coins)
+        new_coins = self.__calc_change(change, self.coins)
         if new_coins:
             back_coins = []
             for key, val in self.coins.items():
